@@ -1,38 +1,49 @@
-# ORB-Bot
-Automated ORB Breakout + Fibonacci Pullback + MACD Confluence Strategy (Alpaca Options)
+# ORB + Fib Options Bot
 
-This project implements a fully automated, production-grade trading system that executes the Opening Range Breakout (ORB) strategy combined with Fibonacci pullback entries and MACD confluence, using Alpaca’s Options API.
+An opinionated, build-ready scaffold for an Opening Range Breakout (ORB) + Fibonacci pullback options strategy on Alpaca. The system tracks a configurable ORB window, waits for a full-bar breakout, enters on 0.5/0.618 pullbacks with MACD confluence, and manages positions with bracket protection and an underlying watcher.
 
-It is designed to mirror the workflow described by an ORB + Fib trader who has traded this system profitably for years.
+## Layout
+```
+orb-fib-bot/
+  config/
+    settings.yml          # session, risk, options, notifications
+    symbols.yml           # tickers to scan
+  src/
+    runner.py             # entry point
+    data_client.py        # Alpaca data wrapper (mock by default)
+    indicators.py         # MACD, swing helpers
+    fib_orb_engine.py     # ORB + Fib breakout logic
+    options_selector.py   # expiry/strike selection
+    sizer.py              # position sizing
+    executor.py           # order placement (mock-friendly)
+    watcher.py            # underlying monitoring
+    journal.py            # SQLite trade log
+    notify.py             # Slack/Email hooks (stubs)
+    utils.py              # config + logging helpers
+  tests/
+    test_engine.py        # ORB/Fib engine coverage
+    test_sizer.py
+    test_executor.py
+  scripts/
+    backfill_history.py   # quick bar fetch demo
+    paper_reset.py        # placeholder reset script
+  Dockerfile
+  requirements.txt
+```
 
-The bot automatically:
+## Quickstart
+1. Install deps: `pip install -r requirements.txt`
+2. Configure symbols and risk in `config/settings.yml` and `config/symbols.yml` (JSON syntax that remains valid YAML).
+3. Run the intraday loop (mocked data provider by default):
+   ```bash
+   python -m src.runner
+   ```
+4. Execute tests:
+   ```bash
+   pytest
+   ```
 
-Builds the 15m / 30m / 60m Opening Range
-
-Confirms breakout with a full 5-minute candle close beyond OR
-
-Draws Fibonacci levels on the 5-minute chart
-
-Waits for a pullback to 0.50 or 0.618 retracement
-
-Confirms with MACD curl (momentum shift)
-
-Selects the best options contract by expiry & delta
-
-Sizes the position using % of portfolio allocation
-
-Places Alpaca market bracket orders with a hard stop
-
-Monitors the underlying for exits at:
-
-HOD/LOD retest
-
-Fib extensions (1.272 / 1.618)
-
-Or R-multiple (optional)
-
-Journals all trades into SQLite
-
-Provides optional Slack/email alerts
-
-Enforces daily loss limits, max trades per day, and automatic kill-switches
+## Notes
+- The Alpaca client hooks are intentionally thin so you can inject a real provider.
+- Signals require ORB breakout, Fib retest (0.5/0.618), and MACD agreement; otherwise, the bot stays flat.
+- Journal entries are stored in `journal.db` and can be exported to CSV.
