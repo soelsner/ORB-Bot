@@ -24,12 +24,7 @@ def main(settings_path: str = "config/settings.yml", symbols_path: str = "config
         orb_minutes=config.settings.get("session", {}).get("orb_minutes", 30),
         breakout_close_minutes=config.settings.get("session", {}).get("breakout_close_minutes", 5),
     )
-    selector = OptionsSelector(
-        data_client,
-        min_delta=config.settings.get("options", {}).get("min_delta", 0.3),
-        max_delta=config.settings.get("options", {}).get("max_delta", 0.6),
-        days_to_expiry=config.settings.get("options", {}).get("days_to_expiry", 5),
-    )
+    selector = OptionsSelector(data_client)
     executor = Executor(client=None)
     journal = Journal()
 
@@ -51,7 +46,15 @@ def _process_symbol(symbol, tz, data_client, engine, selector, executor, journal
         logger.info("No signal for %s", symbol)
         return
 
-    option = selector.choose(symbol, signal.direction, end)
+    options_cfg = config.settings.get("options", {})
+    option = selector.contracts_for_entry(
+        symbol,
+        signal.direction,
+        end,
+        options_cfg.get("expiry_policy", "same_day"),
+        options_cfg.get("target_delta", 0.35),
+        options_cfg.get("fallback", "ATM"),
+    )
     if not option:
         logger.warning("No option candidate for %s", symbol)
         return
@@ -61,7 +64,7 @@ def _process_symbol(symbol, tz, data_client, engine, selector, executor, journal
         risk_pct=config.settings.get("risk", {}).get("portfolio_risk_pct", 1.0),
         stop_buffer_pct=config.settings.get("risk", {}).get("stop_buffer_pct", 0.0),
     )
-    size = sizer.contracts_for_trade(option.mid, signal.stop, signal.entry)
+    size = sizer.contracts_for_trade(option.ask, signal.stop, signal.entry)
     if not size:
         logger.warning("Sizing rejected for %s", symbol)
         return
