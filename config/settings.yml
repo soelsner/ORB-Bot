@@ -39,7 +39,7 @@ limits:
 
 notify:
   enabled: false
-  channel: "slack"                       # or "email"
+  channel: "text"
 
 
 Secrets via env vars (never commit):
