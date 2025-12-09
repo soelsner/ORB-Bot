@@ -41,10 +41,4 @@ notify:
   enabled: false
   channel: "text"
 
-
-Secrets via env vars (never commit):
-
-APCA_API_KEY_ID=...
-APCA_API_SECRET_KEY=...
-APCA_API_BASE_URL=https://paper-api.alpaca.markets
-SLACK_WEBHOOK_URL=...
+# Load credentials from a local secrets.sh script (see secrets.example.sh).
