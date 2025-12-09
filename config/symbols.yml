@@ -1,0 +1,7 @@
+{
+  "symbols": [
+    {"ticker": "SPY", "option_type": "both"},
+    {"ticker": "QQQ", "option_type": "both"},
+    {"ticker": "TSLA", "option_type": "calls_only"}
+  ]
+}
