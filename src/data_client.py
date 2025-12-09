@@ -57,16 +57,29 @@ class DataClient:
         strikes = [90, 95, 100, 105, 110]
         deltas = [0.2, 0.35, 0.5, 0.65, 0.8]
         premiums = [1.5, 2.5, 3.5, 5.5, 7.5]
-        return [
-            {
-                "strike": strike,
-                "delta": delta,
-                "bid": premium,
-                "ask": premium + 0.3,
-                "type": "call",
-            }
-            for strike, delta, premium in zip(strikes, deltas, premiums)
-        ]
+        chain = []
+        for strike, delta, premium in zip(strikes, deltas, premiums):
+            chain.append(
+                {
+                    "strike": strike,
+                    "delta": delta,
+                    "bid": premium,
+                    "ask": premium + 0.3,
+                    "type": "call",
+                    "expiry": expiry,
+                }
+            )
+            chain.append(
+                {
+                    "strike": strike,
+                    "delta": -delta,
+                    "bid": premium,
+                    "ask": premium + 0.3,
+                    "type": "put",
+                    "expiry": expiry,
+                }
+            )
+        return chain
 
 
 def _timeframe_to_timedelta(timeframe: str) -> timedelta:
