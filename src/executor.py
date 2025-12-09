@@ -59,12 +59,15 @@ class Executor:
             logger.exception("Failed to place order: %s", exc)
             return OrderResult(submitted=False, reason=str(exc))
 
-    def close_option_market(self, symbol: str) -> None:
+    def close_option_market(self, symbol: str, qty: Optional[int] = None) -> None:
         if not self.client:
             logger.warning("No trading client configured; cannot close %s", symbol)
             return
         try:
-            self.client.close_position(symbol=symbol, type="market")
+            kwargs = {"symbol": symbol, "type": "market"}
+            if qty is not None:
+                kwargs["qty"] = qty
+            self.client.close_position(**kwargs)
         except Exception as exc:  # noqa: BLE001
             logger.exception("Failed to close %s: %s", symbol, exc)
 

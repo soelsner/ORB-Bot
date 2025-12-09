@@ -83,6 +83,8 @@ class DataClient:
 
 
 def _timeframe_to_timedelta(timeframe: str) -> timedelta:
+    if timeframe.lower().startswith("1"):
+        return timedelta(minutes=1)
     if timeframe.lower().startswith("5"):
         return timedelta(minutes=5)
     if timeframe.lower().startswith("15"):

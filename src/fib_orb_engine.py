@@ -33,6 +33,9 @@ class TradeSignal:
     reason: str
     orb: ORBBox
     entry_time: datetime
+    anchor_a: float
+    anchor_b: float
+    entry_level: float
 
 
 def compute_orb(bars_1m: Iterable[Bar], minutes: int) -> Tuple[float, float, datetime]:
@@ -277,7 +280,18 @@ class FibOrbEngine:
         stop, targets = stops_targets(direction_label, fibs_at_entry, entry_price, mode="fib")
         reason = f"ORB breakout {direction_label} with fib pullback at {level_used}"
         orb_box = ORBBox(high=or_high, low=or_low, start=bars[0].timestamp, end=or_end)
-        return TradeSignal(direction=direction_label, entry=entry_price, stop=stop, targets=targets, reason=reason, orb=orb_box, entry_time=entry_ts)
+        return TradeSignal(
+            direction=direction_label,
+            entry=entry_price,
+            stop=stop,
+            targets=targets,
+            reason=reason,
+            orb=orb_box,
+            entry_time=entry_ts,
+            anchor_a=A,
+            anchor_b=B,
+            entry_level=level_used,
+        )
 
     @staticmethod
     def _macd_confirms(direction: str, macd_result: MACDResult) -> bool:

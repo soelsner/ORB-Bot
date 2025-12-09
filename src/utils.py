@@ -51,7 +51,7 @@ def setup_logging(config: Dict[str, Any]) -> None:
     )
 
 
-def now(tz: Optional[pytz.BaseTzInfo] = None) -> datetime:
+def now(tz: Optional[ZoneInfo] = None) -> datetime:
     tzinfo = tz or ZoneInfo("UTC")
     return datetime.now(tzinfo)
 
