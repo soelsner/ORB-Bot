@@ -60,16 +60,25 @@ def _process_symbol(symbol, tz, data_client, engine, selector, executor, journal
         return
 
     sizer = Sizer(
-        portfolio_value=100000,  # placeholder until hooked into broker account
-        risk_pct=config.settings.get("risk", {}).get("portfolio_risk_pct", 1.0),
-        stop_buffer_pct=config.settings.get("risk", {}).get("stop_buffer_pct", 0.0),
+        account_equity=100000,  # placeholder until hooked into broker account
+        portfolio_alloc_pct=config.settings.get("risk", {}).get("portfolio_alloc_pct", 0.25),
+        option_hard_stop_pct=config.settings.get("risk", {}).get("option_hard_stop_pct", 0.5),
     )
-    size = sizer.contracts_for_trade(option.ask, signal.stop, signal.entry)
+    size = sizer.contracts_for_trade(option.ask, option.ask)
     if not size:
         logger.warning("Sizing rejected for %s", symbol)
         return
 
-    order_result = executor.place_bracket(symbol, size.contracts, signal.entry, signal.stop, signal.targets)
+    order_result = executor.enter_with_bracket(
+        option_symbol=option.option_symbol,
+        qty=size.contracts,
+        hard_stop_opt_price=size.hard_stop_price,
+        take_profit_opt_price=None,
+        trade_date=str(end.date()),
+        symbol=symbol,
+        direction=signal.direction,
+        orb_len=engine.orb_minutes,
+    )
     if not order_result.submitted:
         logger.warning("Order failed for %s: %s", symbol, order_result.reason)
         return
