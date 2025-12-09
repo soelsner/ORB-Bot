@@ -1,0 +1,28 @@
+{
+  "session": {
+    "timezone": "America/New_York",
+    "orb_minutes": 30,
+    "fib_timeframe": "5Min",
+    "breakout_close_minutes": 5
+  },
+  "risk": {
+    "portfolio_risk_pct": 1.0,
+    "stop_buffer_pct": 0.001,
+    "max_open_positions": 2
+  },
+  "options": {
+    "min_delta": 0.3,
+    "max_delta": 0.6,
+    "days_to_expiry": 5,
+    "use_atm_when_no_chain": true
+  },
+  "notifications": {
+    "slack_webhook": "",
+    "email_to": "",
+    "from_email": ""
+  },
+  "logging": {
+    "level": "INFO",
+    "log_file": "logs/orb_fib_bot.log"
+  }
+}
