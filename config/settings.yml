@@ -1,0 +1,50 @@
+env: paper                              # paper | live
+symbol: SPY                              # underlying for options
+timezone: "America/New_York"
+
+orb:
+  minutes: [30, 15, 60]                  # priority order respected
+  fib_timeframe: "5min"
+  pullback_levels: [0.5, 0.618]
+  invalidate_level: 0.786
+  no_pullback_timeout_min: 120           # skip if no tag within 2h of breakout
+  confirm_full_close: true               # require close beyond OR
+
+macd:
+  fast: 12
+  slow: 26
+  signal: 9
+  confirm_bars: 3                        # slope/curl confirmation window
+
+risk:
+  portfolio_alloc_pct: 0.25              # 25% per trade
+  option_hard_stop_pct: 0.50             # broker-side (-50%) hard stop
+  rr_target: 2.0                         # used if rr mode selected
+  target_mode: "hod_lod_then_extension"  # "rr_multiple" | "hod_lod_then_extension"
+  partial_take:
+    enabled: true
+    pct_close_at_t1: 0.7                 # 70% at HOD/LOD, runner to extension
+
+options:
+  expiry_policy: "same_day"              # same_day | next_weekly
+  target_delta: 0.35
+  fallback: "ATM"
+  order_type: "market"
+  time_in_force: "day"                   # Alpaca options require 'day'
+
+limits:
+  daily_loss_pct: 0.05                   # stop trading if equity down 5% today
+  max_trades_per_day: 1                  # OP-style discipline
+  market_latest_entry_et: "14:30"        # avoid late-day entries (optional)
+
+notify:
+  enabled: false
+  channel: "slack"                       # or "email"
+
+
+Secrets via env vars (never commit):
+
+APCA_API_KEY_ID=...
+APCA_API_SECRET_KEY=...
+APCA_API_BASE_URL=https://paper-api.alpaca.markets
+SLACK_WEBHOOK_URL=...
